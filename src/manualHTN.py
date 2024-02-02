@@ -66,6 +66,16 @@ def produce (state, ID, item):
 	if item == 'wood': 
 		return [('produce_wood', ID)]
 	# your code here
+	elif item == 'plank':
+		return [('produce_plank', ID)]
+	elif item == 'stick':
+		return [('produce_stick', ID)]
+	elif item == 'bench':
+		if state.made_bench[ID] is True:
+			return False
+		else:
+			state.made_bench[ID] = True
+			return [('produce_bench', ID)]
 	elif item == 'wooden_axe':
 		# this check to make sure we're not making multiple axes
 		if state.made_wooden_axe[ID] is True:
@@ -101,10 +111,10 @@ def craft_bench (state, ID):
 def wooden_axe_for_wood (state, ID):
 	return [('have_enough', ID, 'wooden_axe', 1), ('op_wooden_axe_for_wood', ID)]
 
-
-
-pyhop.declare_methods ('produce_wood', punch_for_wood, wooden_axe_for_wood)
+pyhop.declare_methods ('produce_wood', wooden_axe_for_wood, punch_for_wood)
 pyhop.declare_methods ('produce_wooden_axe', craft_wooden_axe_at_bench)
+
+# we're supposed to put our own here right?
 pyhop.declare_methods ('produce_plank', craft_plank)
 pyhop.declare_methods ('produce_stick', craft_stick)
 pyhop.declare_methods ('produce_bench', craft_bench)
@@ -114,14 +124,23 @@ pyhop.declare_methods ('produce_bench', craft_bench)
 # declare state
 state = pyhop.State('state')
 state.wood = {'agent': 0}
-state.time = {'agent': 4}
-# state.time = {'agent': 46}
+# state.time = {'agent': 4}
+state.time = {'agent': 46}
 state.wooden_axe = {'agent': 0}
 state.made_wooden_axe = {'agent': False}
 # your code here 
+state.plank = {'agent': 0}
+state.stick = {'agent': 0}
+state.bench = {'agent': 0}
+state.made_bench = {'agent': False}
 
 # pyhop.print_operators()
 # pyhop.print_methods()
 
 pyhop.pyhop(state, [('have_enough', 'agent', 'wood', 1)], verbose=3)
+
+# pyhop.pyhop(state, [('have_enough', 'agent', 'plank', 4)], verbose=3)
+
 # pyhop.pyhop(state, [('have_enough', 'agent', 'wood', 12)], verbose=3)
+# pyhop.pyhop(state, [('have_enough', 'agent', 'wood', 12)], verbose=2)
+# pyhop.pyhop(state, [('have_enough', 'agent', 'wood', 12)], verbose=1)
