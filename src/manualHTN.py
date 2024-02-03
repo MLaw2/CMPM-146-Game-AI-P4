@@ -112,6 +112,7 @@ def wooden_axe_for_wood (state, ID):
 	return [('have_enough', ID, 'wooden_axe', 1), ('op_wooden_axe_for_wood', ID)]
 
 pyhop.declare_methods ('produce_wood', wooden_axe_for_wood, punch_for_wood)
+# pyhop.declare_methods ('produce_wood', punch_for_wood, wooden_axe_for_wood)
 pyhop.declare_methods ('produce_wooden_axe', craft_wooden_axe_at_bench)
 
 # we're supposed to put our own here right?
@@ -137,10 +138,10 @@ state.made_bench = {'agent': False}
 # pyhop.print_operators()
 # pyhop.print_methods()
 
-pyhop.pyhop(state, [('have_enough', 'agent', 'wood', 1)], verbose=3)
+# pyhop.pyhop(state, [('have_enough', 'agent', 'wood', 1)], verbose=3)
 
 # pyhop.pyhop(state, [('have_enough', 'agent', 'plank', 4)], verbose=3)
 
-# pyhop.pyhop(state, [('have_enough', 'agent', 'wood', 12)], verbose=3)
+pyhop.pyhop(state, [('have_enough', 'agent', 'wood', 12)], verbose=3)
 # pyhop.pyhop(state, [('have_enough', 'agent', 'wood', 12)], verbose=2)
 # pyhop.pyhop(state, [('have_enough', 'agent', 'wood', 12)], verbose=1)
