@@ -16,18 +16,64 @@ def produce (state, ID, item):
 pyhop.declare_methods ('produce', produce)
 
 def make_method (name, rule):
+	# print("make_method( ", name, ", ", rule, ")")
 	def method (state, ID):
 		# your code here
+		final = []
+		for item in rule["Requires"]:
+			itemName = item.keys()
+			print(type(item), ", ", itemName)
+			final.append(('have_enough', ID, itemName, item[itemName]))
+		
 		pass
 
 	return method
+
+def sort_recipes(recipes):
+	sortedRecipes = []
+	# keep track of how many tools found so we can sort them into the right spots
+	ironCount = 0
+	stoneCount = 0
+	woodCount = 0
+	for recipeName in recipes:
+		# faster recipes are the ones with tools. find the recipes with tools first (each tool has an underscore.)
+		# order doesn't matter for crafting recipes (they won't have multiple) exclude those with "craft" first
+		# order for procuring resources needs to be: iron, stone, wood, punch (if there is punch)
+		# if underscore then find what type of tool
+		if recipeName.find('_') >= 0 and recipeName.find("craft") == -1:
+			# now i need to find what kind of tool it is.
+			# iron: always goes first
+			if recipeName.find("iron") >= 0:
+				sortedRecipes.insert(ironCount, recipeName)
+				ironCount += 1
+			elif recipeName.find("stone") >= 0:
+				sortedRecipes.insert(ironCount + stoneCount, recipeName)
+				stoneCount+=1
+			elif recipeName.find("wooden") >= 0:
+				sortedRecipes.insert(ironCount + stoneCount + woodCount, recipeName)
+				woodCount+=1
+		else:
+			# put the element at the end of the list
+			sortedRecipes.append(recipeName)
+	return sortedRecipes
+
+		
 
 def declare_methods (data):
 	# some recipes are faster than others for the same product even though they might require extra tools
 	# sort the recipes so that faster recipes go first
 
 	# your code here
+
+	sortedRecipes = sort_recipes(data["Recipes"].keys())
+	# methods = []
+	# print(sortedRecipes)
+	for recipeName in sortedRecipes:
+		# print(recipeName)
+		# print(data["Recipes"][recipeName])
+		pyhop.declare_methods(recipeName, make_method(recipeName, data["Recipes"][recipeName]))
 	# hint: call make_method, then declare the method to pyhop using pyhop.declare_methods('foo', m1, m2, ..., mk)	
+	pyhop.print_methods()
 	pass			
 
 def make_operator (rule):
@@ -92,5 +138,5 @@ if __name__ == '__main__':
 
 	# Hint: verbose output can take a long time even if the solution is correct; 
 	# try verbose=1 if it is taking too long
-	pyhop.pyhop(state, goals, verbose=3)
+	pyhop.pyhop(state, goals, verbose=1)
 	# pyhop.pyhop(state, [('have_enough', 'agent', 'cart', 1),('have_enough', 'agent', 'rail', 20)], verbose=3)
