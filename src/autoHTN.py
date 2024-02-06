@@ -23,8 +23,8 @@ def make_method (name, rule):
 			if category == "Requires" or category == "Consumes":
 				final.append(('have_enough', ID, item, number))
 		pass
-	producedItem = list(rule['Produces'].keys())
-	method.__name__ = "produce_" + producedItem[0]
+	# producedItem = list(rule['Produces'].keys())
+	method.__name__ = name
 	return method
 
 def sort_recipes(recipes):
@@ -56,7 +56,39 @@ def sort_recipes(recipes):
 			sortedRecipes.append(recipeName)
 	return sortedRecipes
 
-
+### TODO
+# DOES NOT SORT PROPER. PLS FIX
+def sort_methods(methodList, data):
+	sortedMethods = {}
+	for method in methodList:
+		recipeName = method.__name__
+		producedItem = list(data["Recipes"][recipeName]["Produces"].keys())[0]
+		methodNames = list(sortedMethods.keys())
+		if methodNames.count(producedItem) == 0:
+			sortedMethods.update({producedItem: [method]})
+		else: #this means that producedItem is most likely coal, wood, or ore
+			#time to sort
+			if method.__name__.find('iron'):
+				sortedMethods.update({producedItem: [method] + sortedMethods[producedItem]})
+			elif method.__name__.find('stone'):
+				temp = sortedMethods[producedItem]
+				if temp[0].__name__.find('iron'):
+					temp.insert(1, method)
+				else:
+					temp.insert(0, method)
+				sortedMethods.update({producedItem: temp})
+			elif method.__name__.find('wood'):
+				temp = sortedMethods[producedItem]
+				if temp[-1].__name__.find('punch'):
+					temp.insert(len(temp)-1, method)
+				else:
+					temp.append(method)
+				sortedMethods.update({producedItem: temp})
+			else:
+				#this should be punch (right?)
+				print("somethingthatisn'tatool: ", method.__name__)
+				sortedMethods.update({producedItem: sortedMethods[producedItem] + [method]})
+	return sortedMethods
 
 def declare_methods (data):
 	# some recipes are faster than others for the same product even though they might require extra tools
@@ -64,16 +96,36 @@ def declare_methods (data):
 
 	# your code here
 
-	sortedRecipes = sort_recipes(data["Recipes"].keys())
-	# methods = []
-	# print(sortedRecipes)
-	for recipeName in sortedRecipes:
-		# print(data["Recipes"][recipeName])
-		# item = data["Recipes"][recipeName]["Produces"][data["Recipes"][recipeName]["Produces"].keys()]
+
+	### TODO
+	# I gotta redo declare methods
+	# New approach: First make the methods from the Recipes
+	# Then: Sort the methods into common items(all the cobble methods go in one place)
+	methodList = []
+	for recipeName in data["Recipes"].keys():
 		rules = data["Recipes"][recipeName]
 		method = make_method(recipeName, rules)
-		print(method.__name__)
-		pyhop.declare_methods('foo', method) # replace with real tasks
+		methodList.append(method)
+	# now I need to sort the methods by the item
+	# CREATE A SORTING METHOD THAT RETURNS A DICT OF ITEMS AND VALUES
+	sortedMethods = sort_methods(methodList, data)
+	for item, temp in sortedMethods.items():
+		for method in temp:
+			print("item: ", item, ", method: ", method.__name__)
+
+
+	# sortedRecipes = sort_recipes(data["Recipes"].keys())
+	# # methods = []
+	# # print(sortedRecipes)
+	# for recipeName in sortedRecipes:
+	# 	# print(data["Recipes"][recipeName])
+	# 	# item = data["Recipes"][recipeName]["Produces"][data["Recipes"][recipeName]["Produces"].keys()]
+	# 	rules = data["Recipes"][recipeName]
+	# 	method = make_method(recipeName, rules)
+	# 	print(method.__name__)
+	# 	pyhop.declare_methods('foo', method) # replace with real tasks
+
+
 	# hint: call make_method, then declare the method to pyhop using pyhop.declare_methods('foo', m1, m2, ..., mk)	
 	# pyhop.print_methods()
 	pass
