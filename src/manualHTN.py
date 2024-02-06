@@ -85,7 +85,14 @@ def op_craft_bench (state, ID):
 		return state
 	return False
 
-pyhop.declare_operators (op_punch_for_wood, op_craft_wooden_axe_at_bench, op_wooden_axe_for_wood, op_craft_plank, op_craft_stick, op_craft_bench)
+pyhop.declare_operators (op_punch_for_wood, 
+						 op_craft_wooden_axe_at_bench,
+						 op_wooden_axe_for_wood, op_craft_plank,
+						 op_craft_stick, op_craft_bench,
+						 op_craft_wooden_pickaxe_at_bench,
+						 op_wooden_pickaxe_for_cobble,
+						 op_craft_stone_axe_at_bench,
+						 op_stone_axe_for_wood)
 
 '''end operators'''
 
