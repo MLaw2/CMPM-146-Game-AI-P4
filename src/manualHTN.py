@@ -20,6 +20,40 @@ def op_craft_wooden_axe_at_bench (state, ID):
 
 # your code here
 
+def op_craft_wooden_pickaxe_at_bench (state, ID):
+	if state.time[ID] >= 1 and state.bench[ID] >= 1 and state.plank[ID] >= 3 and state.stick[ID] >=2:
+		state.wooden_pickaxe[ID] += 1
+		state.plank[ID] -= 3
+		state.stick[ID] -= 2
+		state.time[ID] -= 1
+		return state
+	return False
+
+def op_wooden_pickaxe_for_cobble (state, ID):
+	if state.time[ID] >= 4 and state.wooden_pickaxe[ID] >= 1:
+		state.cobble[ID] += 1
+		state.time[ID] -= 4
+		return state
+	return False
+
+def op_craft_stone_axe_at_bench (state, ID):
+	if state.time[ID] >= 1 and state.bench[ID] >= 1 and state.cobble[ID] >= 3 and state.stick[ID] >=2:
+		state.stone_axe[ID] += 1
+		state.cobble[ID] -= 3
+		state.stick[ID] -= 2
+		state.time[ID] -= 1
+		return state
+	return False
+
+def op_stone_axe_for_wood (state, ID):
+	if state.time[ID] >= 1 and state.stone_axe[ID] >= 1:
+		state.wood[ID] += 1
+		state.time[ID] -= 1
+		return state
+	return False
+
+# end mine
+
 def op_wooden_axe_for_wood (state, ID):
 	if state.time[ID] >= 2 and state.wooden_axe[ID] >= 1:
 		state.wood[ID] += 1

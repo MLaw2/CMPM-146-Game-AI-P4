@@ -79,23 +79,51 @@ def declare_methods (data):
 def make_operator (rule):
 	def operator (state, ID):
 		# your code here
-		pass
+		for key, value in rule.items():
+			if key == 'Produces':
+				for item, num in  value.items():
+					setattr(state, item, {ID: getattr(state, item)[ID] + num})
+			if key == 'Time':
+				if state.time[ID] >= num:
+					state.time[ID] -= num
+				else:
+					return False
+			if key == 'Consumes':
+				for item, num in value.items():
+					if getattr(state, item)[ID] >= num:
+						setattr(state, item, {ID: getattr(state, item)[ID] - num})
+		return state
 	return operator
 
 def declare_operators (data):
 	# your code here
 	# hint: call make_operator, then declare the operator to pyhop using pyhop.declare_operators(o1, o2, ..., ok)
-	pass
+	op_list = []
+	for key, value in sorted(data['Recipes'].items(), key=lambda item: item[1]["Time"], reverse=True):
+		key = key.replace(" ", "_")
+		time_for_this = value['Time']
+		temp = make_operator(value)
+		temp.__name__ = 'op_' + key
+		op_list.append((temp, time_for_this))
+		sorted(op_list, key=lambda item: time_for_this, reverse=False)
+	for cur, _ in op_list:
+		pyhop.declare_operators(cur)
 
 def add_heuristic (data, ID):
 	# prune search branch if heuristic() returns True
 	# do not change parameters to heuristic(), but can add more heuristic functions with the same parameters: 
 	# e.g. def heuristic2(...); pyhop.add_check(heuristic2)
 	def heuristic (state, curr_task, tasks, plan, depth, calling_stack):
-		# your code here
-		return False # if True, prune this branch
+		if curr_task in tasks:
+			return False
+		return True
+	
+	def heuristic2 (state, curr_task, tasks, plan, depth, calling_stack):
+		return depth > 500
+		# if True, prune this branch
 
 	pyhop.add_check(heuristic)
+	pyhop.add_check(heuristic2)
 
 
 def set_up_state (data, ID, time=0):
