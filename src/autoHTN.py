@@ -16,24 +16,19 @@ def produce (state, ID, item):
 pyhop.declare_methods ('produce', produce)
 
 def make_method (name, rule):
-	# print("make_method( ", name, ", ", rule, ")")
 	def method (state, ID):
 		# your code here
-		# final = []
-		for key, item in rule:
-			
-		for item in rule["Requires"]:
-			itemName = item.keys()
-			print(type(item), ", ", itemName)
-			final.append(('have_enough', ID, itemName, item[itemName]))
-		for item in rule["Consumes"]:
-			itemName = item.keys()
-			final.append(('have_enough', ID, itemName, item[itemName]))
+		final = []
+		for category in rule.keys():
+			if category == "Requires" or category == "Consumes":
+				final.append(('have_enough', ID, item, number))
 		pass
-	method.__name__ = name
+	producedItem = list(rule['Produces'].keys())
+	method.__name__ = "produce_" + producedItem[0]
 	return method
 
 def sort_recipes(recipes):
+	# returns a sorted list of strings with recipe names
 	sortedRecipes = []
 	# keep track of how many tools found so we can sort them into the right spots
 	ironCount = 0
@@ -61,7 +56,7 @@ def sort_recipes(recipes):
 			sortedRecipes.append(recipeName)
 	return sortedRecipes
 
-		
+
 
 def declare_methods (data):
 	# some recipes are faster than others for the same product even though they might require extra tools
@@ -73,13 +68,15 @@ def declare_methods (data):
 	# methods = []
 	# print(sortedRecipes)
 	for recipeName in sortedRecipes:
-		# print(recipeName)
 		# print(data["Recipes"][recipeName])
 		# item = data["Recipes"][recipeName]["Produces"][data["Recipes"][recipeName]["Produces"].keys()]
-		pyhop.declare_methods('foo', make_method(recipeName, data["Recipes"][recipeName]))
+		rules = data["Recipes"][recipeName]
+		method = make_method(recipeName, rules)
+		print(method.__name__)
+		pyhop.declare_methods('foo', method) # replace with real tasks
 	# hint: call make_method, then declare the method to pyhop using pyhop.declare_methods('foo', m1, m2, ..., mk)	
-	pyhop.print_methods()
-	pass			
+	# pyhop.print_methods()
+	pass
 
 def make_operator (rule):
 	def operator (state, ID):
