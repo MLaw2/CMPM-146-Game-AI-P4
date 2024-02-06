@@ -19,14 +19,18 @@ def make_method (name, rule):
 	# print("make_method( ", name, ", ", rule, ")")
 	def method (state, ID):
 		# your code here
-		final = []
+		# final = []
+		for key, item in rule:
+			
 		for item in rule["Requires"]:
 			itemName = item.keys()
 			print(type(item), ", ", itemName)
 			final.append(('have_enough', ID, itemName, item[itemName]))
-		
+		for item in rule["Consumes"]:
+			itemName = item.keys()
+			final.append(('have_enough', ID, itemName, item[itemName]))
 		pass
-
+	method.__name__ = name
 	return method
 
 def sort_recipes(recipes):
@@ -71,7 +75,8 @@ def declare_methods (data):
 	for recipeName in sortedRecipes:
 		# print(recipeName)
 		# print(data["Recipes"][recipeName])
-		pyhop.declare_methods(recipeName, make_method(recipeName, data["Recipes"][recipeName]))
+		# item = data["Recipes"][recipeName]["Produces"][data["Recipes"][recipeName]["Produces"].keys()]
+		pyhop.declare_methods('foo', make_method(recipeName, data["Recipes"][recipeName]))
 	# hint: call make_method, then declare the method to pyhop using pyhop.declare_methods('foo', m1, m2, ..., mk)	
 	pyhop.print_methods()
 	pass			

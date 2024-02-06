@@ -104,6 +104,7 @@ def produce_enough (state, ID, item, num):
 	return [('produce', ID, item), ('have_enough', ID, item, num)]
 
 def produce (state, ID, item):
+	# pyhop.print_methods()
 	if item == 'wood': 
 		return [('produce_wood', ID)]
 	# your code here
@@ -124,6 +125,18 @@ def produce (state, ID, item):
 		else:
 			state.made_wooden_axe[ID] = True
 		return [('produce_wooden_axe', ID)]
+	elif item == 'wooden_pickaxe':
+		if state.made_wooden_pickaxe[ID] is True:
+			return False
+		else:
+			state.made_wooden_axe[ID] = True
+		return [('produce_wooden_pickaxe', ID)]
+	elif item == 'stone_axe':
+		if state.made_stone_axe[ID] is True:
+			return False
+		else:
+			state.made_stone_axe[ID] = True
+		return [('produce_stone_axe', ID)]
 	else:
 		return False
 
@@ -152,11 +165,24 @@ def craft_bench (state, ID):
 def wooden_axe_for_wood (state, ID):
 	return [('have_enough', ID, 'wooden_axe', 1), ('op_wooden_axe_for_wood', ID)]
 
-pyhop.declare_methods ('produce_wood', wooden_axe_for_wood, punch_for_wood)
+def wooden_pickaxe_for_cobble (state, ID):
+	return [('have_enough', ID, 'wooden_pickaxe', 1), ('op_wooden_pickaxe_for_cobble', ID)]
+
+def stone_axe_for_wood (state, ID):
+	return [('have_enough', ID, 'stone_axe', 1), ('op_stone_axe_for_wood', ID)]
+
+def craft_wooden_pickaxe_at_bench (state, ID):
+	return [('have_enough', ID, 'bench', 1), ('have_enough', ID, 'stick', 2), ('have_enough', ID, 'plank', 3), ('op_craft_wooden_pickaxe_at_bench', ID)]
+
+def craft_stone_axe_at_bench (state, ID):
+	return [('have_enough', ID, 'bench', 1), ('have_enough', ID, 'stick', 2), ('have_enough', ID, 'cobble', 3), ('op_craft_stone_axe_at_bench', ID)]
+
+pyhop.declare_methods ('produce_wood', wooden_axe_for_wood, stone_axe_for_wood, punch_for_wood)
 # pyhop.declare_methods ('produce_wood', punch_for_wood, wooden_axe_for_wood)
 pyhop.declare_methods ('produce_wooden_axe', craft_wooden_axe_at_bench)
+pyhop.declare_methods ('produce_wooden_pickaxe', craft_wooden_pickaxe_at_bench)
+pyhop.declare_methods ('produce_stone_axe', craft_stone_axe_at_bench)
 
-# we're supposed to put our own here right?
 pyhop.declare_methods ('produce_plank', craft_plank)
 pyhop.declare_methods ('produce_stick', craft_stick)
 pyhop.declare_methods ('produce_bench', craft_bench)
@@ -171,6 +197,11 @@ state.time = {'agent': 46}
 state.wooden_axe = {'agent': 0}
 state.made_wooden_axe = {'agent': False}
 # your code here 
+state.made_wooden_pickaxe = {'agent': False}
+state.made_stone_axe = {'agent': False}
+state.wooden_pickaxe = {'agent': 0}
+state.stone_axe = {'agent': 0}
+state.cobble = {'agent': 0}
 state.plank = {'agent': 0}
 state.stick = {'agent': 0}
 state.bench = {'agent': 0}
@@ -183,6 +214,6 @@ state.made_bench = {'agent': False}
 
 # pyhop.pyhop(state, [('have_enough', 'agent', 'plank', 4)], verbose=3)
 
-pyhop.pyhop(state, [('have_enough', 'agent', 'wood', 12)], verbose=3)
+pyhop.pyhop(state, [('have_enough', 'agent', 'wood', 12)], verbose=1)
 # pyhop.pyhop(state, [('have_enough', 'agent', 'wood', 12)], verbose=2)
 # pyhop.pyhop(state, [('have_enough', 'agent', 'wood', 12)], verbose=1)
