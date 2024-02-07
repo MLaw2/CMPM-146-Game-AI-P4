@@ -19,44 +19,20 @@ def make_method (name, rule):
 	def method (state, ID):
 		# your code here
 		final = []
+		item = list(rule["Produces"].keys())[0]
+		number = rule["Produces"][item]
 		for category in rule.keys():
 			if category == "Requires" or category == "Consumes":
 				final.append(('have_enough', ID, item, number))
-		final.append(("op_" + name, ID))
+		# fix operator string
+		operator = "op_" + name
+		operator = operator.replace(' ', '_')
+		final.append((operator, ID))
 		return final
 		pass
 	# producedItem = list(rule['Produces'].keys())
 	method.__name__ = name
 	return method
-
-def sort_recipes(recipes):
-	# returns a sorted list of strings with recipe names
-	sortedRecipes = []
-	# keep track of how many tools found so we can sort them into the right spots
-	ironCount = 0
-	stoneCount = 0
-	woodCount = 0
-	for recipeName in recipes:
-		# faster recipes are the ones with tools. find the recipes with tools first (each tool has an underscore.)
-		# order doesn't matter for crafting recipes (they won't have multiple) exclude those with "craft" first
-		# order for procuring resources needs to be: iron, stone, wood, punch (if there is punch)
-		# if underscore then find what type of tool
-		if recipeName.find('_') >= 0 and recipeName.find("craft") == -1:
-			# now i need to find what kind of tool it is.
-			# iron: always goes first
-			if recipeName.find("iron") >= 0:
-				sortedRecipes.insert(ironCount, recipeName)
-				ironCount += 1
-			elif recipeName.find("stone") >= 0:
-				sortedRecipes.insert(ironCount + stoneCount, recipeName)
-				stoneCount+=1
-			elif recipeName.find("wooden") >= 0:
-				sortedRecipes.insert(ironCount + stoneCount + woodCount, recipeName)
-				woodCount+=1
-		else:
-			# put the element at the end of the list
-			sortedRecipes.append(recipeName)
-	return sortedRecipes
 
 ### TODO
 # # DOES NOT SORT PROPER. PLS FIX
@@ -114,29 +90,12 @@ def declare_methods (data):
 	sortedMethods = sort_methods(methodList, data)
 	# time to declare all the methods
 	for item, temp in sortedMethods.items():
-	# 	print("item: ", item)
-	# 	number = 1
 		temp = []
-		for method in temp:
+		for method in sortedMethods[item]:
+			#replace spaces with underscores
+			method.__name__ = method.__name__.replace(' ', '_')
 			temp.append(method)
-	# 		print("method ", number, ": ", method.__name__)
-	# 		number +=1
-		pyhop.declare_methods(item, *temp)
-	pyhop.print_methods()
-
-
-
-	# sortedRecipes = sort_recipes(data["Recipes"].keys())
-	# # methods = []
-	# # print(sortedRecipes)
-	# for recipeName in sortedRecipes:
-	# 	# print(data["Recipes"][recipeName])
-	# 	# item = data["Recipes"][recipeName]["Produces"][data["Recipes"][recipeName]["Produces"].keys()]
-	# 	rules = data["Recipes"][recipeName]
-	# 	method = make_method(recipeName, rules)
-	# 	print(method.__name__)
-	# 	pyhop.declare_methods('foo', method) # replace with real tasks
-
+		pyhop.declare_methods("produce_" + item, *temp)
 
 	# hint: call make_method, then declare the method to pyhop using pyhop.declare_methods('foo', m1, m2, ..., mk)	
 	# pyhop.print_methods()
@@ -227,8 +186,8 @@ if __name__ == '__main__':
 	declare_methods(data)
 	add_heuristic(data, 'agent')
 
-	# pyhop.print_operators()
-	# pyhop.print_methods()
+	pyhop.print_operators()
+	pyhop.print_methods()
 
 	# Hint: verbose output can take a long time even if the solution is correct; 
 	# try verbose=1 if it is taking too long
