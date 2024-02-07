@@ -22,7 +22,7 @@ def make_method (name, rule):
 		for category in rule.keys():
 			if category == "Requires" or category == "Consumes":
 				final.append(('have_enough', ID, item, number))
-		final.append("op_" + name)
+		final.append(("op_" + name, ID))
 		return final
 		pass
 	# producedItem = list(rule['Produces'].keys())
