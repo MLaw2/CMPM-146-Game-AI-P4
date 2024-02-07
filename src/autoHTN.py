@@ -179,15 +179,17 @@ if __name__ == '__main__':
 	with open(rules_filename) as f:
 		data = json.load(f)
 
-	state = set_up_state(data, 'agent', time=239) # allot time here
+	state = set_up_state(data, 'agent', time=4) # allot time here
 	goals = set_up_goals(data, 'agent')
+
+	#DEBUG
 
 	declare_operators(data)
 	declare_methods(data)
 	add_heuristic(data, 'agent')
 
-	pyhop.print_operators()
-	pyhop.print_methods()
+	# pyhop.print_operators()
+	# pyhop.print_methods()
 
 	# Hint: verbose output can take a long time even if the solution is correct; 
 	# try verbose=1 if it is taking too long
