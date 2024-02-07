@@ -22,6 +22,8 @@ def make_method (name, rule):
 		for category in rule.keys():
 			if category == "Requires" or category == "Consumes":
 				final.append(('have_enough', ID, item, number))
+		final.append("op_" + name)
+		return final
 		pass
 	# producedItem = list(rule['Produces'].keys())
 	method.__name__ = name
@@ -58,24 +60,7 @@ def sort_recipes(recipes):
 
 ### TODO
 # # DOES NOT SORT PROPER. PLS FIX
-# def methods_to_string(methodList):
-# 	methodNames = []
-# 	for method in methodList:
-# 		methodNames.append(method.__name__)
-# 	#double chek this works
-# 	print(type(methodNames[0]), ", ", methodNames[0])
-# 	return methodNames
-
 def sort_methods(methodList, data):
-	# methodNameList = methods_to_string(methodList)
-	# sortedNames = {}
-	# for methodName in methodNameList:
-		# producedItem = list(data["Recipes"][recipeName]["Produces"].keys())[0]
-	# 	sortedNames = list(sortedNames.keys())
-	# 	if sortedNames.count(producedItem) == 0:
-	# 		sortedNames.update({producedItem: [methodName]})
-	# 	elif methodName.find():
-
 	sortedMethods = {}
 	for method in methodList:
 		recipeName = method.__name__
@@ -89,14 +74,14 @@ def sort_methods(methodList, data):
 				sortedMethods.update({producedItem: [method] + sortedMethods[producedItem]})
 			elif method.__name__.find("stone")>=0:
 				temp = sortedMethods[producedItem]
-				if temp[0].__name__.find('iron'):
+				if temp[0].__name__.find('iron')>=0:
 					temp.insert(1, method)
 				else:
 					temp.insert(0, method)
 				sortedMethods.update({producedItem: temp})
 			elif method.__name__.find("wooden")>=0:
 				temp = sortedMethods[producedItem]
-				if temp[-1].__name__.find("punch"):
+				if temp[-1].__name__.find("punch") >= 0:
 					temp.insert(len(temp)-1, method)
 				else:
 					temp.append(method)
@@ -105,7 +90,7 @@ def sort_methods(methodList, data):
 				#this should be punch (right?)
 				sortedMethods.update({producedItem: sortedMethods[producedItem] + [method]})
 			else:
-				print("POOP")
+				print("THAT WASN'T SUPPOSED TO HAPPEN")
 	return sortedMethods
 
 def declare_methods (data):
@@ -127,12 +112,18 @@ def declare_methods (data):
 	# now I need to sort the methods by the item
 	# CREATE A SORTING METHOD THAT RETURNS A DICT OF ITEMS AND VALUES
 	sortedMethods = sort_methods(methodList, data)
+	# time to declare all the methods
 	for item, temp in sortedMethods.items():
-		print("item: ", item)
-		number = 1
+	# 	print("item: ", item)
+	# 	number = 1
+		temp = []
 		for method in temp:
-			print("method ", number, ": ", method.__name__)
-			number +=1
+			temp.append(method)
+	# 		print("method ", number, ": ", method.__name__)
+	# 		number +=1
+		pyhop.declare_methods(item, *temp)
+	pyhop.print_methods()
+
 
 
 	# sortedRecipes = sort_recipes(data["Recipes"].keys())
