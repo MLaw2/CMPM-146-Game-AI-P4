@@ -57,8 +57,25 @@ def sort_recipes(recipes):
 	return sortedRecipes
 
 ### TODO
-# DOES NOT SORT PROPER. PLS FIX
+# # DOES NOT SORT PROPER. PLS FIX
+# def methods_to_string(methodList):
+# 	methodNames = []
+# 	for method in methodList:
+# 		methodNames.append(method.__name__)
+# 	#double chek this works
+# 	print(type(methodNames[0]), ", ", methodNames[0])
+# 	return methodNames
+
 def sort_methods(methodList, data):
+	# methodNameList = methods_to_string(methodList)
+	# sortedNames = {}
+	# for methodName in methodNameList:
+		# producedItem = list(data["Recipes"][recipeName]["Produces"].keys())[0]
+	# 	sortedNames = list(sortedNames.keys())
+	# 	if sortedNames.count(producedItem) == 0:
+	# 		sortedNames.update({producedItem: [methodName]})
+	# 	elif methodName.find():
+
 	sortedMethods = {}
 	for method in methodList:
 		recipeName = method.__name__
@@ -68,26 +85,27 @@ def sort_methods(methodList, data):
 			sortedMethods.update({producedItem: [method]})
 		else: #this means that producedItem is most likely coal, wood, or ore
 			#time to sort
-			if method.__name__.find('iron'):
+			if method.__name__.find("iron")>=0:
 				sortedMethods.update({producedItem: [method] + sortedMethods[producedItem]})
-			elif method.__name__.find('stone'):
+			elif method.__name__.find("stone")>=0:
 				temp = sortedMethods[producedItem]
 				if temp[0].__name__.find('iron'):
 					temp.insert(1, method)
 				else:
 					temp.insert(0, method)
 				sortedMethods.update({producedItem: temp})
-			elif method.__name__.find('wood'):
+			elif method.__name__.find("wooden")>=0:
 				temp = sortedMethods[producedItem]
-				if temp[-1].__name__.find('punch'):
+				if temp[-1].__name__.find("punch"):
 					temp.insert(len(temp)-1, method)
 				else:
 					temp.append(method)
 				sortedMethods.update({producedItem: temp})
-			else:
+			elif method.__name__.find("punch")>=0:
 				#this should be punch (right?)
-				print("somethingthatisn'tatool: ", method.__name__)
 				sortedMethods.update({producedItem: sortedMethods[producedItem] + [method]})
+			else:
+				print("POOP")
 	return sortedMethods
 
 def declare_methods (data):
@@ -110,8 +128,11 @@ def declare_methods (data):
 	# CREATE A SORTING METHOD THAT RETURNS A DICT OF ITEMS AND VALUES
 	sortedMethods = sort_methods(methodList, data)
 	for item, temp in sortedMethods.items():
+		print("item: ", item)
+		number = 1
 		for method in temp:
-			print("item: ", item, ", method: ", method.__name__)
+			print("method ", number, ": ", method.__name__)
+			number +=1
 
 
 	# sortedRecipes = sort_recipes(data["Recipes"].keys())
