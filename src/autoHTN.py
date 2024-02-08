@@ -17,58 +17,18 @@ pyhop.declare_methods ('produce', produce)
 
 def make_method (name, rule):
 	def method (state, ID):
-		# your code here
 		final = []
-		item = list(rule["Produces"].keys())[0]
-		number = rule["Produces"][item]
-		for category in rule.keys():
-			if category == "Requires" or category == "Consumes":
-				final.append(('have_enough', ID, item, number))
-		# fix operator string
+		for key, value in rule.items():
+			if key != 'Produces':
+				if type(value) == dict:
+					for item, num in value.items():
+						final.append(('have_enough', ID, item, num))
 		operator = "op_" + name
 		operator = operator.replace(' ', '_')
 		final.append((operator, ID))
 		return final
-		pass
-	# producedItem = list(rule['Produces'].keys())
 	method.__name__ = name
 	return method
-
-### TODO
-# # DOES NOT SORT PROPER. PLS FIX
-def sort_methods(methodList, data):
-	sortedMethods = {}
-	for method in methodList:
-		recipeName = method.__name__
-		producedItem = list(data["Recipes"][recipeName]["Produces"].keys())[0]
-		methodNames = list(sortedMethods.keys())
-		if methodNames.count(producedItem) == 0:
-			sortedMethods.update({producedItem: [method]})
-		else: #this means that producedItem is most likely coal, wood, or ore
-			#time to sort
-			if method.__name__.find("iron")>=0:
-				sortedMethods.update({producedItem: [method] + sortedMethods[producedItem]})
-			elif method.__name__.find("stone")>=0:
-				temp = sortedMethods[producedItem]
-				if temp[0].__name__.find('iron')>=0:
-					temp.insert(1, method)
-				else:
-					temp.insert(0, method)
-				sortedMethods.update({producedItem: temp})
-			elif method.__name__.find("wooden")>=0:
-				temp = sortedMethods[producedItem]
-				if temp[-1].__name__.find("punch") >= 0:
-					temp.insert(len(temp)-1, method)
-				else:
-					temp.append(method)
-				sortedMethods.update({producedItem: temp})
-			elif method.__name__.find("punch")>=0:
-				#this should be punch (right?)
-				sortedMethods.update({producedItem: sortedMethods[producedItem] + [method]})
-			else:
-				print("THAT WASN'T SUPPOSED TO HAPPEN")
-				sortedMethods.update({producedItem: sortedMethods[producedItem] + [method]})
-	return sortedMethods
 
 def declare_methods (data):
 	# some recipes are faster than others for the same product even though they might require extra tools
@@ -85,8 +45,21 @@ def declare_methods (data):
 		method = make_method(recipeName, rules)
 		methodList.append(method)
 	# now I need to sort the methods by the item
-	# CREATE A SORTING METHOD THAT RETURNS A DICT OF ITEMS AND VALUES
-	sortedMethods = sort_methods(methodList, data)
+	# CREATE A SORTING METHOD THAT RETURNS A DICT OF ITEMS AND VALUESfor key, value in sorted(data['Recipes'].items(), key=lambda item: item[1]["Time"], reverse=True):
+	dict_methods = {}
+	for key, value in sorted(data['Recipes'].items(), key=lambda item: item[1]["Time"], reverse=True):
+		key = key.replace(" ", "_")
+		for name in value['Produces'].items():
+			if name in dict_methods:
+				if isinstance(dict_methods[name], list):
+					cur_method = make_method(key, value)
+					dict_methods[name].append(cur_method)
+				else:
+					dict_methods[name] = [dict_methods[name]]
+			else:
+				cur_method = make_method(key, value)
+				dict_methods[name] = [cur_method]
+	sortedMethods = dict_methods
 	# time to declare all the methods
 	for item, temp in sortedMethods.items():
 		temp = []
@@ -94,7 +67,7 @@ def declare_methods (data):
 			#replace spaces with underscores
 			method.__name__ = method.__name__.replace(' ', '_')
 			temp.append(method)
-		pyhop.declare_methods("produce_" + item, *temp)
+		pyhop.declare_methods("produce_" + item[0], *temp)
 
 	# hint: call make_method, then declare the method to pyhop using pyhop.declare_methods('foo', m1, m2, ..., mk)	
 	# pyhop.print_methods()
