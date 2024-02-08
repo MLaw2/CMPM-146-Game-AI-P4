@@ -67,6 +67,7 @@ def sort_methods(methodList, data):
 				sortedMethods.update({producedItem: sortedMethods[producedItem] + [method]})
 			else:
 				print("THAT WASN'T SUPPOSED TO HAPPEN")
+				sortedMethods.update({producedItem: sortedMethods[producedItem] + [method]})
 	return sortedMethods
 
 def declare_methods (data):
@@ -74,8 +75,6 @@ def declare_methods (data):
 	# sort the recipes so that faster recipes go first
 
 	# your code here
-
-
 	### TODO
 	# I gotta redo declare methods
 	# New approach: First make the methods from the Recipes
@@ -139,9 +138,11 @@ def add_heuristic (data, ID):
 	# do not change parameters to heuristic(), but can add more heuristic functions with the same parameters: 
 	# e.g. def heuristic2(...); pyhop.add_check(heuristic2)
 	def heuristic (state, curr_task, tasks, plan, depth, calling_stack):
+
 		if curr_task in tasks:
 			return False
 		return True
+		return tasks
 	
 	def heuristic2 (state, curr_task, tasks, plan, depth, calling_stack):
 		return depth > 500
@@ -182,14 +183,12 @@ if __name__ == '__main__':
 	state = set_up_state(data, 'agent', time=4) # allot time here
 	goals = set_up_goals(data, 'agent')
 
-	#DEBUG
-
 	declare_operators(data)
 	declare_methods(data)
 	add_heuristic(data, 'agent')
 
-	# pyhop.print_operators()
-	# pyhop.print_methods()
+	pyhop.print_operators()
+	pyhop.print_methods()
 
 	# Hint: verbose output can take a long time even if the solution is correct; 
 	# try verbose=1 if it is taking too long
